@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400&display=swap');
+            * {
+                border: 0;
+                padding: 0;
+                margin: 0;
+                outline: none;
+                user-select: none;
+                font-family: 'Kanit', sans-serif;
+            }
+            body {
+                color: #9da39d;
+                background-color: #292d34;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="section">
+            <div class="heading">Balance</div>
+            <div class="value" id="balance">5.00</div>
+        </div>
+    </body>
+    <script>
+        const API = (function(){
+            const _add = (data) => {
+                storage.transactions.push({
+                    id: today.getTime(),
+                    name: data.name,
+                    amount: data.amount,
+                    category: data.category,
+                    timestamp: [today.getDate(), today.getMonth()+1, today.getFullYear()]
+                })
+                localStorage.setItem("cache", JSON.stringify(storage))
+                return storage.transactions[storage.transactions.length-1]
+            }
+            const _update = () => {
+                filtered = []
+                statistics = { income: 0, expense: 0, categories: [{}, []] }
+                date = [today.getDate(), today.getMonth()+1, today.getDay()]
+                range = [(date[0] - date[2]), ((date[0] - date[2]) + 6)]
+                storage.transactions.forEach((transaction) => {
+                    if (transaction.timestamp[0] > (range[0]-1)) {
+                        filtered.push(transaction)
+                    }
+                })
+                filtered.forEach((item) => {
+                    if (item.amount < 0) {
+                        if (item.category) {
+                            if (!statistics.categories[1].includes(item.category)) {
+                                statistics.categories[0][item.category] = []
+                                statistics.categories[1].push(item.category)
+                            }
+                            statistics.categories[0][item.category].push(item)
+                            statistics.expense += item.amount * -1
+                        }
+                    } else {
+                        statistics.income += item.amount
+                    }
+                })
+            }
+            return {
+                add(data) {
+                    return _add(data)
+                },
+                update() {
+                    _update()
+                }
+            }
+        })()
+    </script>
+    <script>
+        window.addEventListener("load", () => {
+            if (!localStorage.getItem("cache")) {
+                localStorage.setItem("cache", JSON.stringify({
+                    categories: [
+                        ["Transport", 0.1],
+                        ["Food", 0.35],
+                        ["Entertainment", 0.15],
+                        ["Tithes & Donations", 0.1],
+                        ["Miscellaneous", 0.15]
+                    ],
+                    transactions: []
+                }))
+            }
+            today = new Date()
+            storage = JSON.parse(localStorage.getItem("cache"))
+            API.update()
+        })
+    </script>
+</html>
