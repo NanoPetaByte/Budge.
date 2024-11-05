@@ -3,93 +3,680 @@
     <head>
         <title></title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
             * {
                 border: 0;
                 padding: 0;
                 margin: 0;
                 outline: none;
                 user-select: none;
-                font-family: 'Kanit', sans-serif;
+                font-family: "Outfit", serif;
+                font-optical-sizing: auto;
+                transition: all 0.25s, margin-left 0s;
+                -webkit-tap-highlight-color: transparent;
             }
             body {
-                color: #9da39d;
-                background-color: #292d34;
+                background-color: #111111;
+                color: #FFFFFF;
+                font-size: 15px;
+                margin-bottom: 75px;
+            }
+            .header {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #111111;
+                height: 75px;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                padding: 0px calc(15px/0.75);
+                list-style-type: none;
+            }
+            .header li.logo {
+                width: 100%;
+                text-align: center;
+                font-size: calc(15px * 2);
+                font-weight: 600;
+            }
+            .tab {
+                display: none;
+                margin: calc(15px/0.75);
+                margin-top: 75px;
+            }
+            .tab#home-tab .section {
+                display: none;
+                margin: calc(15px/0.75) 0px;
+            }
+            .tab#home-tab .section#overview-section {
+                border-radius: 5px;
+                background-color: rgba(255, 255, 255, 0.025)
+            }
+            .tab#home-tab .section#overview-section .frame {
+                padding: 15px 17.5px;
+                padding-bottom: 10px;
+            }
+            .tab#home-tab .section span.heading {
+                font-size: calc(15px/1.35);
+                color: rgba(255, 255, 255, 0.5);
+                padding-bottom: calc(15px/1.35/6);
+                display: block;
+                text-transform: uppercase;
+            }
+            .tab#home-tab .section#overview-section span.heading {
+                padding-bottom: 0;
+            }
+            .tab#home-tab .section#overview-section .frame h1 {
+                font-size: calc(15px/0.6);
+                line-height: calc(15px/0.6 * 1.35)
+            }
+            .tab#home-tab .section#overview-section .graph#overview-graph {
+                display: flex;
+                background-color: rgba(0, 0, 0, 0.1);
+                height: 12.5px;
+                overflow: hidden;
+            }
+            .tab#home-tab .section#overview-section .graph#overview-graph div {
+                height: 100%;
+            }
+            .tab#home-tab .section#overview-section ul.legend {
+                display: flex;
+                flex-wrap: wrap;
+                list-style-type: none;
+                padding: calc(7.5px/2)
+            }
+            .tab#home-tab .section#overview-section ul.legend li {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: calc(7.5px/2) 7.5px;
+                font-size: calc(15px/1.25)
+            }
+            .tab#home-tab .section#overview-section ul.legend li div {
+                width: calc(15px/1.25/1.25);
+                aspect-ratio: 1;
+                margin-right: 7.5px;
+                border-radius: calc(15px/1.25/1.25/4)
+            }
+            .tab#home-tab .section#transactions-section .info {
+                margin: 15px 0px;
+            }
+            .tab#home-tab .section#transactions-section .info .frame {
+                display: flex;
+                align-items: center;
+            }
+            .tab#home-tab .section#transactions-section .info .frame h1 {
+                font-size: calc(15px/0.65);
+                line-height: calc(15px/0.65 * 1.35);
+                width: calc(100% - 100px - (100px/4));
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+            .tab#home-tab .section#transactions-section .info .frame select {
+                appearance: none;
+                padding: 7.5px 0px;
+                width: 100px;
+                border-radius: 5px;
+                text-align: center;
+                margin-left: calc(100px/4);
+                font-weight: 500;
+            }
+            .tab#home-tab .section#transactions-section canvas {
+                width: 100%;
+                aspect-ratio: 16/5;
+            }
+            .tab#home-tab .section#transactions-section .statistics {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                list-style-type: none;
+                margin: 15px 0px;
+                border-radius: 5px;
+            }
+            .tab#home-tab .section#transactions-section .statistics li {
+                display: flex;
+                align-items: center;
+                width: 100%;
+            }
+            .tab#home-tab .section#transactions-section .statistics li div h1 {
+                font-size: calc(15px/0.9)
+            }
+            .tab#home-tab .section#transactions-section .statistics li div span {
+                font-size: calc(15px/1.1)
+            }
+            .tab#home-tab .section#transactions-section .statistics li div:has(i) {
+                height: 40px;
+                aspect-ratio: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: calc(40px/2);
+                margin-right: calc(40px/2/1.5);
+                border-radius: 5px;
+            }
+            .tab#home-tab .section#transactions-section .transactions {
+                aspect-ratio: 4/3;
+                overflow: auto;
+                position: relative;
+            }
+            .tab#home-tab .section#transactions-section .transactions li:not(.heading) {
+                display: flex;
+                align-items: center;
+                background-color: rgba(255, 255, 255, 0.0125);
+                border-radius: 5px;
+                margin-bottom: 5px;
+                padding: 12.5px;
+                font-size: calc(15px * 0.9);
+                line-height: calc((15px * 0.9)/1.1)
+            }
+            .tab#home-tab .section#transactions-section .transactions li:not(.heading) h1.name {
+                font-size: calc(15px * 1.25);
+                line-height: calc((15px * 1.25)/1.1);
+                margin-bottom: calc((15px * 1.25)/4)
+            }
+            .tab#home-tab .section#transactions-section .transactions li:not(.heading) h1:not(.name) {
+                font-size: calc(15px * 1.5);
+                line-height: calc((15px * 1.5)/1.1);
+            }
+            .tab#home-tab .section#transactions-section .transactions li.heading {
+                display: flex;
+                align-items: center;
+                color: rgba(255, 255, 255, 0.75);
+                padding: 7.5px 0px;
+                position: sticky;
+                top: -1px;
+                left: 0;
+                right: 0;
+                background-color: #111111;
+            }
+            .tab#home-tab .section#transactions-section .transactions li.heading div {
+                width: 100%;
+                font-size: calc(15px/1.35);
+                color: rgba(255, 255, 255, 0.5);
+                display: block;
+                text-transform: uppercase;
+            }
+            .tab#transaction-tab .section {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                list-style-type: none;
+                width: 75%;
+            }
+            .tab#transaction-tab .section li {
+                width: 100%;
+                margin: 15px 0px;
+            }
+            .tab#transaction-tab .section li h1 {
+                font-size: calc(15px * 1.75);
+                line-height: calc((15px * 1.75)/1.125);
+                text-align: center;
+            }
+            .tab#transaction-tab .section li span {
+                display: block;
+                font-size: calc(15px/1.25);
+                text-transform: uppercase;
+                padding-bottom: 5px;
+                color: rgba(255, 255, 255, 0.75);
+            }
+            .tab#transaction-tab .section li input, .tab#transaction-tab .section li select {
+                width: calc(100% - (10px * 1.25 * 2) - 2px); 
+                font-size: 15px;
+                padding: 10px calc(10px * 1.25);
+                background-color: transparent;
+                border: 1px solid #FFFFFF;
+                color: #FFFFFF;
+                border-radius: 5px;
+            }
+            .tab#transaction-tab .section li.frame select {
+                appearance: none;
+                width: 100%;
+                text-align: center;
+            }
+            .tab#transaction-tab .section li button {
+                width: 100%;
+                color: #FFFFFF;
+                font-size: 15px;
+                padding: 10px calc(10px * 1.25);
+                border-radius: 5px;
+                font-weight: 600;
+                opacity: 0.9;
+            }
+            .navigation {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: fixed;
+                bottom: -1px;
+                left: 0;
+                right: 0;
+                height: 75px;
+                background-color: #111111;
+                list-style-type: none;
+            }
+            .navigation li {
+                width: calc(100%/2);
+                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .navigation li a {
+                text-decoration: none;
+                color: #FFFFFF;
+            }
+            .navigation li a i {
+                font-size: calc(75px/1.125/3.5);
+                margin-bottom: calc(75px/1.125/3.5/3);
+            }
+            .navigation li a div {
+                font-size: calc(75px/1.125/7);
+                text-transform: uppercase;
             }
         </style>
     </head>
     <body>
-        <div class="section">
-            <div class="heading">Balance</div>
-            <div class="value" id="balance">5.00</div>
+        <ul class="header">
+            <li class="logo">budge.</li>
+        </ul>
+        <div class="tab" id="home-tab">
+            <div class="section" id="overview-section">
+                <div class="frame">
+                    <span class="heading" style="margin-bottom: 0px">Balance</span>
+                    <h1 id="overview-balance"></h1>
+                </div>
+                <div class="graph" id="overview-graph"></div>
+                <ul class="legend" id="overview-legend"></ul>
+            </div>
+            <div class="section" id="transactions-section">
+                <div class="info">
+                    <span class="heading">Transactions</span>
+                    <div class="frame">
+                        <h1 id="transactions-datetime">Today, 4 November 2024</h1>
+                        <select id="transactions-rangeselect">
+                            <option value="today">Today</option>
+                            <option value="this-week">This Week</option>
+                            <option value="this-month">This Month</option>
+                            <option value="year-to-date">Year to Date</option>
+                        </select>
+                    </div>
+                </div>
+                <canvas id="transactions-graph"></canvas>
+                <ul class="statistics">
+                    <li>
+                        <div style="border: 1px solid #2ECC71"><i class="fa-solid fa-arrow-up" style="color: #2ECC71"></i></div>
+                        <div>
+                            <span>Income</span>
+                            <h1 id="statistics-income"></h1>
+                        </div>
+                    </li>
+                    <li>
+                        <div style="border: 1px solid #E74C3C"><i class="fa-solid fa-arrow-down" style="color: #E74C3C"></i></div>
+                        <div>
+                            <span>Expense</span>
+                            <h1 id="statistics-expense"></h1>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="transactions" id="transactions-transactions">
+                    <li class="heading">
+                        <div style="text-align: left">Name</div>
+                        <div style="text-align: right">Amount</div>
+                    </li>
+                </ul>
+            </div>
         </div>
+        <div class="tab" id="transaction-tab">
+            <ul class="section" id="transaction-add-section">
+                <li style="margin: 30px 0px; margin-top: 0px;">
+                    <h1>Add<br>transaction</h1>
+                </li>
+                <li style="display: flex; align-items: center; justify-content: center">
+                    <select style="width: 75%; text-align: center; appearance: none; font-weight: 600; color: #FFFFFF; border: 0px" id="transaction-type">
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </li>
+                <li>
+                    <span>Name</span>
+                    <input type="text" id="transaction-name">
+                </li>
+                <li style="display: flex" class="frame">
+                    <div style="width: calc(65% - 2.5px); margin-right: 2.5px" id="transaction-frame-category">
+                        <span>Category</span>
+                        <select id="transaction-category">
+                            <option></option>
+                        </select>
+                    </div>
+                    <div style="width: calc(35% - 2.5px); margin-left: 2.5px" id="transaction-frame-amount">
+                        <span>Amount</span>
+                        <input type="number" id="transaction-amount">
+                    </div>
+                </li>
+                <li style="margin-bottom: 0px;">
+                    <button id="transaction-add-button">Add Transaction</button>
+                </li>
+            </ul>
+            <div class="section" id="transaction-success-section"></div>
+        </div>
+        <ul class="navigation">
+            <li><a href="#WyJ0YWIiLCJob21lIl0=" id="home-tab-button">
+                <i class="fa-solid fa-house"></i>
+                <div>Home</div>
+            </a></li>
+            <li><a href="#WyJ0YWIiLCJ0cmFuc2FjdGlvbiIsImNyZWF0ZSJd" id="transaction-tab-button">
+                <i class="fa-solid fa-plus"></i>
+                <div>Add</div>
+            </a></li>
+        </ul>
     </body>
     <script>
-        const API = (function(){
-            const _add = (data) => {
-                storage.transactions.push({
-                    id: today.getTime(),
-                    name: data.name,
-                    amount: data.amount,
-                    category: data.category,
-                    timestamp: [today.getDate(), today.getMonth()+1, today.getFullYear()]
-                })
-                localStorage.setItem("cache", JSON.stringify(storage))
-                return storage.transactions[storage.transactions.length-1]
-            }
-            const _update = () => {
-                filtered = []
-                statistics = { income: 0, expense: 0, categories: [{}, []] }
-                date = [today.getDate(), today.getMonth()+1, today.getDay()]
-                range = [(date[0] - date[2]), ((date[0] - date[2]) + 6)]
-                storage.transactions.forEach((transaction) => {
-                    if (transaction.timestamp[0] > (range[0]-1)) {
-                        filtered.push(transaction)
-                    }
-                })
-                filtered.forEach((item) => {
-                    if (item.amount < 0) {
-                        if (item.category) {
-                            if (!statistics.categories[1].includes(item.category)) {
-                                statistics.categories[0][item.category] = []
-                                statistics.categories[1].push(item.category)
-                            }
-                            statistics.categories[0][item.category].push(item)
-                            statistics.expense += item.amount * -1
+        window.addEventListener("load", () => {
+            function selectTab(id) {
+                tabs = document.getElementsByClassName("tab")
+                for (var tab in tabs) {
+                    tab = tabs[tab]
+                    if (tab.className === "tab") {
+                        if (tab.id.split("-")[0] === id) {
+                            document.getElementById(tab.id + "-button").style.opacity = 1
+                            tab.style.display = "block"
+                        } else {
+                            document.getElementById(tab.id + "-button").style.opacity = 0.5
+                            tab.style.display = "none"
                         }
-                    } else {
-                        statistics.income += item.amount
                     }
-                })
-            }
-            return {
-                add(data) {
-                    return _add(data)
-                },
-                update() {
-                    _update()
                 }
             }
-        })()
-    </script>
-    <script>
-        window.addEventListener("load", () => {
-            if (!localStorage.getItem("cache")) {
-                localStorage.setItem("cache", JSON.stringify({
-                    categories: [
-                        ["Transport", 0.1],
-                        ["Food", 0.35],
-                        ["Entertainment", 0.15],
-                        ["Tithes & Donations", 0.1],
-                        ["Miscellaneous", 0.15]
-                    ],
-                    transactions: []
-                }))
+            function getRange(type) {
+                if (type) {
+                    current = new Date()
+                    if (type === "today") {
+                        start = new Date(current)
+                        start.setHours(0, 0, 0, 0)
+                        end = new Date(current)
+                        end.setHours(23, 59, 59, 999)
+                    } else if (type === "this-week") {
+                        start = new Date(current)
+                        start.setHours(0, 0, 0, 0)
+                        start.setDate(current.getDate() - current.getDay())
+                        end = new Date(start)
+                        end.setHours(23, 59, 59, 999)
+                        end.setDate(start.getDate() + 6)
+                    } else if (type === "this-month") {
+                        start = new Date(current)
+                        start.setDate(1)
+                        start.setHours(0, 0, 0, 0)
+                        end = new Date(current)
+                        end.setMonth(end.getMonth() + 1)
+                        end.setDate(0)
+                    } else if (type === "year-to-date") {
+                        start = new Date(current)
+                        start.setMonth(0, 1)
+                        start.setHours(0, 0, 0, 0)
+                        end = new Date(current)
+                        end.setHours(23, 59, 59, 999)
+                    }
+                    return [start, end, (end.getTime() - start.getTime()) > 86399999, start.getTime(), end.getTime()]
+                }
             }
-            today = new Date()
-            storage = JSON.parse(localStorage.getItem("cache"))
-            API.update()
+            function plotGraph(id, points) {
+                if (points.length < 2) return null
+                toPlot = []
+                canvas = document.getElementById(id)
+                ctx = canvas.getContext("2d")
+                ctx.clearRect(0, 0, canvas.width, canvas.height)
+                canvas.width = canvas.offsetWidth
+                canvas.height = canvas.offsetHeight
+                range = [[Math.min(...points.map((point) => (point[0]))), Math.max(...points.map((point) => (point[0])))], [Math.min(...points.map((point) => (point[1])))*0.95, Math.max(...points.map((point) => (point[1])))*1.05]]
+                ctx.lineWidth = 2.5
+                for (var point in points) {
+                    /*
+                    point = [point, [((points[point][0]-range[0][0])/(range[0][1]-range[0][0]) * canvas.width), canvas.height - ((points[point][1]-range[1][0])/(range[1][1]-range[1][0]) * canvas.height)], points[point][2]]
+                    */
+
+                    toPlot.push([point, [(((point)/(points.length-1)) * canvas.width), canvas.height - ((points[point][1]-range[1][0])/(range[1][1]-range[1][0]) * canvas.height)], points[point][2]])
+                }
+                for (var point in toPlot) {
+                    point = toPlot[point]
+                    ctx.beginPath()
+                    ctx.strokeStyle = point[2]
+                    if (point[0] < 1) {
+                        ctx.moveTo(point[1][0], point[1][1])
+                    } else {
+                        /*
+                        ctx.moveTo(((points[point[0]-1][0]-range[0][0])/(range[0][1]-range[0][0]) * canvas.width), canvas.height - ((points[point[0]-1][1]-range[1][0])/(range[1][1]-range[1][0]) * canvas.height))
+                        */
+                        ctx.moveTo(toPlot[point[0]-1][1][0], toPlot[point[0]-1][1][1])
+                        ctx.lineTo(point[1][0], point[1][1])
+                        ctx.stroke()
+                    }
+                }
+            }
+            function getTransactions(range, transactions) {
+                if (transactions && range) {
+
+                } else if (range) {
+
+                }
+            }
+            indexedDB.open("budge", 1).onupgradeneeded = function(event) {
+                event.target.result.createObjectStore("transactions", { keyPath: "id" })
+                event.target.result.createObjectStore("categories", { keyPath: "id" }).transaction.oncomplete = function(request) {
+                    store = event.target.result.transaction("categories", "readwrite").objectStore("categories")
+                    categories = [["Food", "#F1C40F", 0.35], ["Transport", "#3498DB", 0.1], ["Miscellaneous", "#95A5A6", 0.2], ["Tithes and Offerings", "#1ABC9C", 0.1], ["Entertainment", "#E91E63", 0.25]]
+                    categories.forEach((category) => {
+                        store.add({ id: btoa(category[0]).slice(0, 10), name: category[0], color: category[1], amount: category[2] })
+                    })
+                }
+                event.target.result.createObjectStore("goals", { keyPath: "id" })
+            }
+            window.addEventListener("hashchange", (event) => {
+                if (window.location.hash < 2) return null
+                event.hash = JSON.parse(atob(window.location.hash.split("#")[1]))
+                if (event.hash[0] === "tab") {
+                    if (event.hash[1] === "home") {
+                        indexedDB.open("budge", 1).onsuccess = function(event) {
+                            sections = {
+                                overview: [{
+                                    balance: document.getElementById("overview-balance"),
+                                    graph: document.getElementById("overview-graph"),
+                                    legend: document.getElementById("overview-legend")
+                                }, document.getElementById("overview-section")],
+                                transactions: [{
+                                    range: document.getElementById("transactions-rangeselect"),
+                                    graph: document.getElementById("transactions-graph"),
+                                    datetime: document.getElementById("transactions-datetime"),
+                                    statistics: {
+                                        income: document.getElementById("statistics-income"),
+                                        expense: document.getElementById("statistics-expense")
+                                    },
+                                    transactions: document.getElementById("transactions-transactions")
+                                }, document.getElementById("transactions-section")]
+                            }
+                            request = event.target.result.transaction(["transactions", "categories"], "readonly")
+                            request.objectStore("transactions").getAll().onsuccess = function(transactions) {
+                                request.objectStore("categories").getAll().onsuccess = function(categories) {
+                                    categories = categories.target.result.reduce((object, category) => {
+                                        object[category.id] = [category.name, category.color]
+                                        return object
+                                    }, {})
+                                    statistics = { income: 0, expense: 0, categories: {} }
+                                    transactions.target.result.forEach((transaction) => {
+                                        if (transaction.amount > 0) {
+                                            statistics.income += transaction.amount
+                                        } else if (transaction.amount < 0) {
+                                            if (!statistics.categories[transaction.category]) statistics.categories[transaction.category] = 0
+                                            statistics.categories[transaction.category] += transaction.amount * -1
+                                            statistics.expense += transaction.amount * -1
+                                        }
+                                    })
+                                    sections.transactions[0].transactions.innerHTML = ""
+                                    sections.overview[0].balance.textContent = `${(statistics.income - statistics.expense).toFixed(2)}`
+                                    sections.overview[0].graph.innerHTML = ""
+                                    sections.overview[0].legend.innerHTML = ""
+                                    Object.entries(statistics.categories).sort(function(a, b){ b[1] - a[1] }).forEach((category) => {
+                                        category = [category, document.createElement("div"), document.createElement("li")]
+                                        category[1].style.backgroundColor = categories[category[0][0]][1]
+                                        category[1].style.width = `${(((category[0][1]/statistics.expense) * (statistics.expense/statistics.income)) * 100)}%`
+                                        category[2].innerHTML = `<div style="background-color: ${categories[category[0][0]][1]}"></div> ${categories[category[0][0]][0]}`
+                                        sections.overview[0].graph.appendChild(category[1])
+                                        sections.overview[0].legend.appendChild(category[2])
+                                    })
+                                    if ((statistics.income - statistics.expense) > 0) sections.overview[1].style.display = "block"
+                                    /* Graph */
+                                    function setGraph(type) {
+                                        data = []
+                                        balance = 0
+                                        rangedStatistics = { income: 0, expense: 0 }
+                                        range = getRange(type)
+                                        sections.transactions[0].datetime.textContent = range[2] ? `${range[0].getDate()+1}/${range[0].getMonth()+1}/${range[0].getFullYear()} - ${range[1].getDate()}/${range[1].getMonth()+1}/${range[1].getFullYear()}` : `${range[0].getDate()}/${range[0].getMonth()+1}/${range[0].getFullYear()}`
+                                        transactions.target.result.filter((transaction) => (transaction.id > range[3]-1 && transaction.id < range[4] + 1)).forEach((transaction) => {
+                                            if (transaction.amount > 0) {
+                                                rangedStatistics.income += transaction.amount
+                                            } else if (transaction.amount < 0) {
+                                                rangedStatistics.expense += transaction.amount * -1
+                                            }
+                                            balance += transaction.amount
+                                            data.push([transaction.id, balance, (transaction.amount < 0) ? categories[transaction.category][1] : "#FFFFFF"])
+                                        })
+                                        sections.transactions[0].statistics.income.textContent = `${rangedStatistics.income.toFixed(2)}`
+                                        sections.transactions[0].statistics.expense.textContent = `${rangedStatistics.expense.toFixed(2)}`
+                                        plotGraph("transactions-graph", data.slice(-Math.floor(sections.transactions[0].graph.width/(2 ** 2))))
+                                    }
+                                    list = transactions.target.result.slice(-50).reverse()
+                                    if (list.length > 1) {
+                                        sections.transactions[1].style.display = "block"
+                                        sections.transactions[0].range.addEventListener("change", (event) => {
+                                            setGraph(event.target.value)
+                                        })
+                                        sections.transactions[0].range.value = "today"
+                                        setGraph(sections.transactions[0].range.value)
+                                        setGraph(sections.transactions[0].range.value)
+                                        /* Transactions */
+                                        heading = document.createElement("li")
+                                        heading.className = "heading"
+                                        heading.innerHTML = `<div style="text-align: left">Name</div><div style="text-align: right">Amount</div>`
+                                        sections.transactions[0].transactions.appendChild(heading)
+                                        for (var transaction in list) {
+                                            transaction = [transaction, list[transaction], document.createElement("li")]
+                                            if (transaction[1].amount < 0) transaction[2].style.border = "1px solid " + categories[transaction[1].category][1]
+                                            else transaction[2].style.border = "1px solid #FFFFFF"
+                                            transaction[2].innerHTML = `
+                                                <div style="width: 75%">
+                                                    <h1 class="name">${transaction[1].name}</h1>
+                                                    <div style="display: block; color: rgba(255, 255, 255, 0.75)">${(new Date(transaction[1].id)).toString().split(" ").slice(0, 5).join(" ")}</div>
+                                                </div>
+                                                <h1 style="width: 25%; text-align: right">${(transaction[1].amount > 0) ? "+" : "-"} ${(transaction[1].amount > 0) ? transaction[1].amount.toFixed(2) : (transaction[1].amount * -1).toFixed(2)}</h1>`
+                                            sections.transactions[0].transactions.appendChild(transaction[2])
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        selectTab("home")
+                    } else if (event.hash[1] === "transaction") {
+                        if (event.hash[2] === "create") {
+                            indexedDB.open("budge", 1).onsuccess = function(event) {
+                                request = event.target.result.transaction("categories", "readonly")
+                                request.objectStore("categories").getAll().onsuccess = function(categories) {
+                                    transaction = {
+                                        category: document.getElementById("transaction-category"),
+                                        button: document.getElementById("transaction-add-button"),
+                                        name: document.getElementById("transaction-name"),
+                                        amount: document.getElementById("transaction-amount"),
+                                        type: document.getElementById("transaction-type"),
+                                        frame: {
+                                            category: document.getElementById("transaction-frame-category"),
+                                            amount: document.getElementById("transaction-frame-amount")
+                                        }
+                                    }
+                                    transaction.category.innerHTML = ""
+                                    for (var category in categories.target.result) {
+                                        category = [category, categories.target.result[category], document.createElement("option")]
+                                        category[2].value = category[1].id
+                                        category[2].textContent = category[1].name
+                                        transaction.category.appendChild(category[2])
+                                    }
+                                    transaction.type.addEventListener("change", (event) => {
+                                        colors = { income: "#2ECC71", expense: "#E74C3C" }
+                                        if (event.target.value === "income") {
+                                            transaction.frame.category.style.display = "none"
+                                            transaction.frame.amount.style.width = "100%"
+                                            transaction.frame.amount.style.marginLeft = "0"
+                                            transaction.button.style.backgroundColor = "#FFFFFF"
+                                            transaction.button.style.color = "#111111"
+                                        } else {
+                                            transaction.frame.category.style.display = "block"
+                                            transaction.frame.category.style.width = "calc(65% - 2.5px)"
+                                            transaction.frame.amount.style.width = "calc(35% - 2.5px)"
+                                            transaction.frame.amount.style.marginLeft = "2.5px"
+                                            transaction.category.addEventListener("change", (event) => {
+                                                category = categories.target.result.filter((category) => (category.id === event.target.value)).pop()
+                                                transaction.category.style.border = "1px solid " + category.color
+                                                transaction.button.style.backgroundColor = category.color
+                                                transaction.button.style.color = "#FFFFFF"
+                                            })
+                                            transaction.category.dispatchEvent(new Event("change"))
+                                        }
+                                        transaction.button.onclick = function() {
+                                            window.location.hash = "#" + btoa(JSON.stringify(["action", "transaction", "add", {
+                                                name: transaction.name.value, category: (transaction.type.value === "expense") ? transaction.category.value : undefined, amount: (transaction.type.value === "expense") ? (parseFloat(transaction.amount.value) * -1) : parseFloat(transaction.amount.value), currency: "SGD"
+                                            }]))
+                                        }
+                                        transaction.type.style.backgroundColor = colors[event.target.value]
+                                    })
+                                    transaction.type.dispatchEvent(new Event("change"))
+                                }
+                            }
+                        } else if (event.hash[2] === "success") {
+                            
+                        } else {
+
+                        }
+                        selectTab("transaction")
+                    }
+                } else if (event.hash[0] === "action") {
+                    if (event.hash[1] === "transaction") {
+                        if (event.hash[2] === "add") {
+                            console.log(event.hash[3])
+                            indexedDB.open("budge", 1).onsuccess = function(request) {
+                                request.target.result.transaction("transactions", "readwrite").objectStore("transactions").add({
+                                    id: Date.now(),
+                                    name: event.hash[3].name,
+                                    amount: event.hash[3].amount,
+                                    category: (event.hash[3].amount < 0) ? event.hash[3].category : undefined,
+                                    currency: event.hash[3].currency
+                                }).onsuccess = function(event) {
+                                    transaction.name.value = ""
+                                    transaction.amount.value = ""
+                                    window.location.hash = "#" + btoa(JSON.stringify(["tab", "home"]))
+                                }
+                            }
+                        }
+                    } else if (event.hash[1] === "category") {
+                        if (event.hash[2] === "add") {
+                            indexedDB.open("budge", 1).onsuccess = function(request) {
+                                request.target.result.transaction("categories", "readwrite").objectStore("categories").add({
+                                    id: btoa(event.hash[3].name).slice(0, 10),
+                                    name: event.hash[3].name,
+                                    color: event.hash[3].color,
+                                    currency: event.hash[3].currency
+                                }).onsuccess = function(event) {
+                                    window.location.hash = "#" + btoa(JSON.stringify(["tab", "home"]))
+                                }
+                            }
+                        }
+                    }
+                    
+                }
+            })
+
+            window.location.hash = "#" + btoa(JSON.stringify(["tab", "home"]))
         })
     </script>
 </html>
