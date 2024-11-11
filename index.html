@@ -536,6 +536,7 @@
                                         rangedStatistics = { income: 0, expense: 0 }
                                         range = getRange(type)
                                         sections.transactions[0].datetime.textContent = range[2] ? `${range[0].getDate()+1}/${range[0].getMonth()+1}/${range[0].getFullYear()} - ${range[1].getDate()}/${range[1].getMonth()+1}/${range[1].getFullYear()}` : `${range[0].getDate()}/${range[0].getMonth()+1}/${range[0].getFullYear()}`
+                                        data.push([0, balance, "#FFFFFF"])
                                         transactions.target.result.filter((transaction) => (transaction.id > range[3]-1 && transaction.id < range[4] + 1)).forEach((transaction) => {
                                             if (transaction.amount > 0) {
                                                 rangedStatistics.income += transaction.amount
@@ -555,7 +556,7 @@
                                         sections.transactions[0].range.addEventListener("change", (event) => {
                                             setGraph(event.target.value)
                                         })
-                                        sections.transactions[0].range.value = "today"
+                                        sections.transactions[0].range.value = "this-month"
                                         setGraph(sections.transactions[0].range.value)
                                         setGraph(sections.transactions[0].range.value)
                                         /* Transactions */
