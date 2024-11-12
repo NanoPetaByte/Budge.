@@ -159,47 +159,19 @@
                 margin-right: calc(40px/2/1.5);
                 border-radius: 5px;
             }
-            .tab#home-tab .section#transactions-section .transactions {
-                aspect-ratio: 4/3;
-                overflow: auto;
-                position: relative;
+            .tab#home-tab .section#transactions-section .categories {
+                list-style-type: none;
             }
-            .tab#home-tab .section#transactions-section .transactions li:not(.heading) {
-                display: flex;
-                align-items: center;
+            .tab#home-tab .section#transactions-section .categories li {
+                margin: 8px 0px;
                 background-color: rgba(255, 255, 255, 0.0125);
+                box-shadow: 0px 0px 1.25px rgba(0, 0, 0, 0.125);
                 border-radius: 5px;
-                margin-bottom: 5px;
-                padding: 12.5px;
-                font-size: calc(15px * 0.9);
-                line-height: calc((15px * 0.9)/1.1)
+                overflow: hidden;
             }
-            .tab#home-tab .section#transactions-section .transactions li:not(.heading) h1.name {
+            .tab#home-tab .section#transactions-section .categories li h1 {
                 font-size: calc(15px * 1.25);
-                line-height: calc((15px * 1.25)/1.1);
-                margin-bottom: calc((15px * 1.25)/4)
-            }
-            .tab#home-tab .section#transactions-section .transactions li:not(.heading) h1:not(.name) {
-                font-size: calc(15px * 1.5);
-                line-height: calc((15px * 1.5)/1.1);
-            }
-            .tab#home-tab .section#transactions-section .transactions li.heading {
-                display: flex;
-                align-items: center;
-                color: rgba(255, 255, 255, 0.75);
-                padding: 7.5px 0px;
-                position: sticky;
-                top: -1px;
-                left: 0;
-                right: 0;
-                background-color: #111111;
-            }
-            .tab#home-tab .section#transactions-section .transactions li.heading div {
-                width: 100%;
-                font-size: calc(15px/1.35);
-                color: rgba(255, 255, 255, 0.5);
-                display: block;
-                text-transform: uppercase;
+                margin-right: calc((15px * 1.25)/8)
             }
             .tab#transaction-tab .section {
                 position: absolute;
@@ -324,12 +296,7 @@
                         </div>
                     </li>
                 </ul>
-                <ul class="transactions" id="transactions-transactions">
-                    <li class="heading">
-                        <div style="text-align: left">Name</div>
-                        <div style="text-align: right">Amount</div>
-                    </li>
-                </ul>
+                <ul class="categories" id="transactions-categories"></ul>
             </div>
         </div>
         <div class="tab" id="transaction-tab">
@@ -496,13 +463,13 @@
                                         income: document.getElementById("statistics-income"),
                                         expense: document.getElementById("statistics-expense")
                                     },
-                                    transactions: document.getElementById("transactions-transactions")
+                                    categories: document.getElementById("transactions-categories")
                                 }, document.getElementById("transactions-section")]
                             }
                             request = event.target.result.transaction(["transactions", "categories"], "readonly")
                             request.objectStore("transactions").getAll().onsuccess = function(transactions) {
-                                request.objectStore("categories").getAll().onsuccess = function(categories) {
-                                    categories = categories.target.result.reduce((object, category) => {
+                                request.objectStore("categories").getAll().onsuccess = function(_categories) {
+                                    categories = _categories.target.result.reduce((object, category) => {
                                         object[category.id] = [category.name, category.color]
                                         return object
                                     }, {})
@@ -516,7 +483,6 @@
                                             statistics.expense += transaction.amount * -1
                                         }
                                     })
-                                    sections.transactions[0].transactions.innerHTML = ""
                                     sections.overview[0].balance.textContent = `${(statistics.income - statistics.expense).toFixed(2)}`
                                     sections.overview[0].graph.innerHTML = ""
                                     sections.overview[0].legend.innerHTML = ""
@@ -533,7 +499,7 @@
                                     function setGraph(type) {
                                         data = []
                                         balance = 0
-                                        rangedStatistics = { income: 0, expense: 0 }
+                                        rangedStatistics = { income: 0, expense: 0, categories: {} }
                                         range = getRange(type)
                                         sections.transactions[0].datetime.textContent = range[2] ? `${range[0].getDate()+1}/${range[0].getMonth()+1}/${range[0].getFullYear()} - ${range[1].getDate()}/${range[1].getMonth()+1}/${range[1].getFullYear()}` : `${range[0].getDate()}/${range[0].getMonth()+1}/${range[0].getFullYear()}`
                                         data.push([0, balance, "#FFFFFF"])
@@ -541,13 +507,36 @@
                                             if (transaction.amount > 0) {
                                                 rangedStatistics.income += transaction.amount
                                             } else if (transaction.amount < 0) {
+                                                if (!rangedStatistics.categories[transaction.category]) rangedStatistics.categories[transaction.category] = 0
                                                 rangedStatistics.expense += transaction.amount * -1
+                                                rangedStatistics.categories[transaction.category] += transaction.amount * -1
                                             }
                                             balance += transaction.amount
                                             data.push([transaction.id, balance, (transaction.amount < 0) ? categories[transaction.category][1] : "#FFFFFF"])
                                         })
                                         sections.transactions[0].statistics.income.textContent = `${rangedStatistics.income.toFixed(2)}`
                                         sections.transactions[0].statistics.expense.textContent = `${rangedStatistics.expense.toFixed(2)}`
+                                        sections.transactions[0].categories.innerHTML = ""
+                                        for (var category in _categories.target.result) {
+                                            category = [_categories.target.result[category], document.createElement("li")]
+                                            if (!rangedStatistics.categories[category[0].id]) rangedStatistics.categories[category[0].id] = 0
+                                            maximum = (category[0].amount < 1) ? (category[0].amount * rangedStatistics.income) : category[0].amount
+                                            category[1].innerHTML = `
+                                                <div style="padding: 10px">
+                                                    <div style="font-size: 12.5px; display: flex; align-items: center"><div style="border-radius: 50%; margin-right: 10px; width: 12.5px; aspect-ratio: 1; background-color: ${category[0].color}"></div>${category[0].name}</div>
+                                                    <div style="margin-top: 10px; display: flex; align-items: center; justify-content: center">
+                                                        <div style="width: 50%; text-align: left">
+                                                            <h1 style="display: inline-block">${rangedStatistics.categories[category[0].id].toFixed(2)}</h1>/${maximum.toFixed(2)}
+                                                        </div>
+                                                        <div style="width: 50%; text-align: right">
+                                                            <h1 style="display: inline-block">${((rangedStatistics.categories[category[0].id]/maximum) * 100).toFixed(2)}</h1>%
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div style="height: 6.25px; background-color: rgba(0, 0, 0, 0.125); overflow: hidden"><div style="background-color: ${category[0].color}; height: 100%; width: ${(rangedStatistics.categories[category[0].id]/maximum) * 100}%"></div></div>
+                                            `
+                                            sections.transactions[0].categories.appendChild(category[1])
+                                        }
                                         plotGraph("transactions-graph", data.slice(-Math.floor(sections.transactions[0].graph.width/(2 ** 2))))
                                     }
                                     list = transactions.target.result.slice(-50).reverse()
@@ -558,24 +547,6 @@
                                         })
                                         sections.transactions[0].range.value = "this-month"
                                         setGraph(sections.transactions[0].range.value)
-                                        setGraph(sections.transactions[0].range.value)
-                                        /* Transactions */
-                                        heading = document.createElement("li")
-                                        heading.className = "heading"
-                                        heading.innerHTML = `<div style="text-align: left">Name</div><div style="text-align: right">Amount</div>`
-                                        sections.transactions[0].transactions.appendChild(heading)
-                                        for (var transaction in list) {
-                                            transaction = [transaction, list[transaction], document.createElement("li")]
-                                            if (transaction[1].amount < 0) transaction[2].style.border = "1px solid " + categories[transaction[1].category][1]
-                                            else transaction[2].style.border = "1px solid #FFFFFF"
-                                            transaction[2].innerHTML = `
-                                                <div style="width: 75%">
-                                                    <h1 class="name">${transaction[1].name}</h1>
-                                                    <div style="display: block; color: rgba(255, 255, 255, 0.75)">${(new Date(transaction[1].id)).toString().split(" ").slice(0, 5).join(" ")}</div>
-                                                </div>
-                                                <h1 style="width: 25%; text-align: right">${(transaction[1].amount > 0) ? "+" : "-"} ${(transaction[1].amount > 0) ? transaction[1].amount.toFixed(2) : (transaction[1].amount * -1).toFixed(2)}</h1>`
-                                            sections.transactions[0].transactions.appendChild(transaction[2])
-                                        }
                                     }
                                 }
                             }
@@ -585,7 +556,7 @@
                         if (event.hash[2] === "create") {
                             indexedDB.open("budge", 1).onsuccess = function(event) {
                                 request = event.target.result.transaction("categories", "readonly")
-                                request.objectStore("categories").getAll().onsuccess = function(categories) {
+                                request.objectStore("categories").getAll().onsuccess = function(_categories) {
                                     transaction = {
                                         category: document.getElementById("transaction-category"),
                                         button: document.getElementById("transaction-add-button"),
@@ -598,8 +569,8 @@
                                         }
                                     }
                                     transaction.category.innerHTML = ""
-                                    for (var category in categories.target.result) {
-                                        category = [category, categories.target.result[category], document.createElement("option")]
+                                    for (var category in _categories.target.result) {
+                                        category = [category, _categories.target.result[category], document.createElement("option")]
                                         category[2].value = category[1].id
                                         category[2].textContent = category[1].name
                                         transaction.category.appendChild(category[2])
@@ -618,7 +589,7 @@
                                             transaction.frame.amount.style.width = "calc(35% - 2.5px)"
                                             transaction.frame.amount.style.marginLeft = "2.5px"
                                             transaction.category.addEventListener("change", (event) => {
-                                                category = categories.target.result.filter((category) => (category.id === event.target.value)).pop()
+                                                category = _categories.target.result.filter((category) => (category.id === event.target.value)).pop()
                                                 transaction.category.style.border = "1px solid " + category.color
                                                 transaction.button.style.backgroundColor = category.color
                                                 transaction.button.style.color = "#FFFFFF"
@@ -677,7 +648,6 @@
                     
                 }
             })
-
             window.location.hash = "#" + btoa(JSON.stringify(["tab", "home"]))
         })
     </script>
