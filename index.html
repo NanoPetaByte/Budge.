@@ -42,6 +42,16 @@
                 text-align: center;
                 font-size: calc(15px * 2);
                 font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .header li.logo div#header-currency {
+                display: inline-block;
+                font-size: calc(15px/1.25);
+                font-weight: 400;
+                margin-left: calc(15px/1.25 * 1.5);
+                text-transform: uppercase;
             }
             .tab {
                 display: none;
@@ -294,7 +304,9 @@
     </head>
     <body>
         <ul class="header">
-            <li class="logo">budge.</li>
+            <li class="logo">
+                budge.<div id="header-currency"></div>
+            </li>
         </ul>
         <div class="tab" id="home-tab">
             <div class="section" id="overview-section">
@@ -478,6 +490,18 @@
 
                 }
             }
+            config = (function(){
+                if (!localStorage.getItem("config")) localStorage.setItem("config", JSON.stringify({ currency: "SGD" }))
+                _config = JSON.parse(localStorage.getItem("config"))
+                if (window.location.search.length > 2) {
+                    params = new URLSearchParams(window.location.search.split("?")[1])
+                    _config.currency = params.get("currency").toUpperCase()
+                }
+                document.getElementById("header-currency").textContent = {
+                    "RM": "Malaysia"
+                }[_config.currency]
+                return _config
+            })()
             indexedDB.open("budge", 1).onupgradeneeded = function(event) {
                 event.target.result.createObjectStore("transactions", { keyPath: "id" })
                 event.target.result.createObjectStore("categories", { keyPath: "id" }).transaction.oncomplete = function(request) {
@@ -520,7 +544,7 @@
                                         return object
                                     }, {})
                                     statistics = { income: 0, expense: 0, categories: {} }
-                                    transactions.target.result.forEach((transaction) => {
+                                    transactions.target.result.filter((transaction) => (transaction.currency === config.currency)).forEach((transaction) => {
                                         if (transaction.amount > 0) {
                                             statistics.income += transaction.amount
                                         } else if (transaction.amount < 0) {
@@ -549,7 +573,7 @@
                                         range = getRange(type)
                                         sections.transactions[0].datetime.textContent = range[2] ? `${range[0].getDate()+1}/${range[0].getMonth()+1}/${range[0].getFullYear()} - ${range[1].getDate()}/${range[1].getMonth()+1}/${range[1].getFullYear()}` : `${range[0].getDate()}/${range[0].getMonth()+1}/${range[0].getFullYear()}`
                                         data.push([0, balance, "#FFFFFF"])
-                                        transactions.target.result.filter((transaction) => (transaction.id > range[3]-1 && transaction.id < range[4] + 1)).forEach((transaction) => {
+                                        transactions.target.result.filter((transaction) => (transaction.id > range[3]-1 && transaction.id < range[4] + 1 && transaction.currency === config.currency)).forEach((transaction) => {
                                             if (transaction.amount > 0) {
                                                 rangedStatistics.income += transaction.amount
                                             } else if (transaction.amount < 0) {
@@ -644,7 +668,7 @@
                                         }
                                         transaction.button.onclick = function() {
                                             window.location.hash = "#" + btoa(JSON.stringify(["action", "transaction", "add", {
-                                                name: transaction.name.value, category: (transaction.type.value === "expense") ? transaction.category.value : undefined, amount: (transaction.type.value === "expense") ? (parseFloat(transaction.amount.value) * -1) : parseFloat(transaction.amount.value), currency: "SGD"
+                                                name: transaction.name.value, category: (transaction.type.value === "expense") ? transaction.category.value : undefined, amount: (transaction.type.value === "expense") ? (parseFloat(transaction.amount.value) * -1) : parseFloat(transaction.amount.value), currency: config.currency
                                             }]))
                                         }
                                         transaction.type.style.backgroundColor = colors[event.target.value]
@@ -671,7 +695,7 @@
                                         object[category.id] = [category.name, category.color]
                                         return object
                                     }, {})
-                                    transactions.target.result.reverse().slice(-50).forEach((transaction) => {
+                                    transactions.target.result.filter((transactions) => (transactions.currency === config.currency)).reverse().slice(-50).forEach((transaction) => {
                                         datetime = (new Date(transaction.id))
                                         formatted = new Intl.DateTimeFormat("en-GB", {
                                             weekday: "long",
