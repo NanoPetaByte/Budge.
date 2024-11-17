@@ -496,11 +496,11 @@
                 if (window.location.search.length > 2) {
                     params = new URLSearchParams(window.location.search.split("?")[1])
                     _config.currency = params.get("currency").toUpperCase()
+                    document.getElementById("header-currency").textContent = {
+                        "RM": "Malaysia"
+                    }[_config.currency]
+                    document.getElementById("header-currency").style.display = "inline-block"
                 }
-                document.getElementById("header-currency").textContent = {
-                    "RM": "Malaysia"
-                }[_config.currency]
-                document.getElementById("header-currency").style.display = "inline-block"
                 return _config
             })()
             indexedDB.open("budge", 1).onupgradeneeded = function(event) {
