@@ -47,7 +47,7 @@
                 justify-content: center;
             }
             .header li.logo div#header-currency {
-                display: inline-block;
+                display: none;
                 font-size: calc(15px/1.25);
                 font-weight: 400;
                 margin-left: calc(15px/1.25 * 1.5);
@@ -500,6 +500,7 @@
                 document.getElementById("header-currency").textContent = {
                     "RM": "Malaysia"
                 }[_config.currency]
+                document.getElementById("header-currency").style.display = "inline-block"
                 return _config
             })()
             indexedDB.open("budge", 1).onupgradeneeded = function(event) {
